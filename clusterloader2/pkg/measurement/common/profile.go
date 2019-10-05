@@ -61,9 +61,14 @@ func (p *profileMeasurement) populateProfileConfig(config *measurement.Measureme
 	if p.config.provider, err = util.GetStringOrDefault(config.Params, "provider", config.ClusterFramework.GetClusterConfig().Provider); err != nil {
 		return err
 	}
-	if p.config.host, err = util.GetStringOrDefault(config.Params, "host", config.ClusterFramework.GetClusterConfig().GetMasterIp()); err != nil {
+	masterIPs, err := util.GetStringSliceOrDefault(config.Params, "hosts", config.ClusterFramework.GetClusterConfig().GetMasterIps())
+	if err != nil {
 		return err
 	}
+	if masterIPs == nil || len(masterIPs) < 1 {
+		return fmt.Errorf("empty slice: there are no master IPs registered %v", masterIPs)
+	}
+	p.config.host = masterIPs[0]
 	return nil
 }
 

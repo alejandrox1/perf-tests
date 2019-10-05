@@ -50,13 +50,12 @@ type PrometheusConfig struct {
 	ScrapeKubeProxy    bool
 }
 
-// GetMasterIp returns the first master ip, added for backward compatibility.
-// TODO(mmatt): Remove this method once all the codebase is migrated to support multiple masters.
-func (c *ClusterConfig) GetMasterIp() string {
+// GetMasterIps returns all registered master IPs.
+func (c *ClusterConfig) GetMasterIps() []string {
 	if len(c.MasterIPs) > 0 {
-		return c.MasterIPs[0]
+		return c.MasterIPs
 	}
-	return ""
+	return nil
 }
 
 // GetMasterInternalIp returns the first internal master ip, added for backward compatibility.

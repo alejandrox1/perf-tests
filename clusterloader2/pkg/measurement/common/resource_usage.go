@@ -66,10 +66,14 @@ func (e *resourceUsageMetricMeasurement) Execute(config *measurement.Measurement
 		if err != nil {
 			return nil, err
 		}
-		host, err := util.GetStringOrDefault(config.Params, "host", config.ClusterFramework.GetClusterConfig().GetMasterIp())
+		masterIPs, err := util.GetStringSliceOrDefault(config.Params, "hosts", config.ClusterFramework.GetClusterConfig().GetMasterIps())
 		if err != nil {
 			return nil, err
 		}
+		if masterIPs == nil || len(masterIPs) < 1 {
+			return nil, fmt.Errorf("empty slice: there are no master IPs registered %v", masterIPs)
+		}
+		host := masterIPs[0]
 		nodeMode, err := util.GetStringOrDefault(config.Params, "nodeMode", "")
 		if err != nil {
 			return nil, err

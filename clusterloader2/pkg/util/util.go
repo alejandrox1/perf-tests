@@ -75,6 +75,15 @@ func GetStringOrDefault(dict map[string]interface{}, key string, defaultValue st
 	return value, err
 }
 
+// GetStringSliceOrDefault tries to return value from map cast to string slice type. If value doesn't exist default value is used.
+func GetStringSliceOrDefault(dict map[string]interface{}, key string, defaultValue []string) ([]string, error) {
+	value, err := getStringSlice(dict, key)
+	if IsErrKeyNotFound(err) {
+		return defaultValue, nil
+	}
+	return value, err
+}
+
 // GetIntOrDefault tries to return value from map cast to int type. If value doesn't exist default value is used.
 func GetIntOrDefault(dict map[string]interface{}, key string, defaultValue int) (int, error) {
 	value, err := getInt(dict, key)
@@ -122,6 +131,19 @@ func getString(dict map[string]interface{}, key string) (string, error) {
 		return "", fmt.Errorf("type assertion error: %v is not a string", value)
 	}
 	return stringValue, nil
+}
+
+func getStringSlice(dict map[string]interface{}, key string) ([]string, error) {
+	value, exists := dict[key]
+	if !exists || value == nil {
+		return nil, &ErrKeyNotFound{key}
+	}
+
+	stringSliceValue, ok := value.([]string)
+	if !ok {
+		return nil, fmt.Errorf("type assertion error: %v is not a string slice", value)
+	}
+	return stringSliceValue, nil
 }
 
 func getInt(dict map[string]interface{}, key string) (int, error) {
